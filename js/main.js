@@ -107,8 +107,9 @@ const checkInvalid = (x, y, i, j) => {
 
     var calcX = (x + j);
     var calcY = (y + i);
+    var check = x + y;
 
-    if (calcX >= 0 && calcX < game.length && calcY >= 0 && calcY < game.length) {
+    if (calcX >= 0 && calcX < game.length && calcY >= 0 && calcY < game.length && ((calcX + calcY) == (check + 1) || (calcX + calcY) == (check - 1))) {
         return false;
     } else
         return (true);
@@ -163,16 +164,19 @@ const tradePos = (pos, newPos) => { //handles the trading of tiles in a move
 const checkGameWin = () => {
     //
     // Please update this function - insert code here to check if a game is won at the end of a move
-    var len = game.length - 1;
-    var min = [0][0]
-        // var ret = true;
+
+    var len = game.length;
+    var count = 1;
+
     for (var i = 0; i < len; i++) {
         for (var j = 0; j < len; j++) {
-            if (min < game[i][j] && game[i][j] != 0)
-                return false;
+            if (game[i][j] == count)
+                count++;
+            else
+                break;
         }
     }
-    return true;
+    return (count == (len * len));
 }
 
 const move = e => { //handles the movement of an actual tile.
