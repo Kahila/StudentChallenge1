@@ -176,7 +176,10 @@ const checkGameWin = () => {
                 break;
         }
     }
-    return (count == (len * len));
+
+    if (game[len - 1][len - 1] == 0 && count == (len * len))
+        return (true);
+    return (false);
 }
 
 const move = e => { //handles the movement of an actual tile.
