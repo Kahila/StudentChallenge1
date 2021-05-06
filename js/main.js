@@ -1,5 +1,5 @@
 //initialize variables
-let canvas, c, w, h, scale, game, tileSize, moves, status 
+let canvas, c, w, h, scale, game, tileSize, moves, status
 
 //initialize the game board
 const init = () => {
@@ -11,17 +11,17 @@ const init = () => {
     const options = document.createElement('div')
     const scrambleBtn = document.createElement('button')
     scrambleBtn.innerText = "Scramble"
-    scrambleBtn.addEventListener('click', () => scramble(Math.floor(Math.random()*100)))
+    scrambleBtn.addEventListener('click', () => scramble(Math.floor(Math.random() * 100)))
     const cubeSize = document.createElement('select')
-    for(let i = 3; i < 6; i++){
+    for (let i = 3; i < 6; i++) {
         const opt = document.createElement('option')
         opt.value = i
         opt.innerText = i
         cubeSize.appendChild(opt)
     }
-    cubeSize.addEventListener('change', function(){ //listens for a response from the player
+    cubeSize.addEventListener('change', function() { //listens for a response from the player
         const value = parseInt(this.value)
-        tileSize = 96 - (value-3) * 16
+        tileSize = 96 - (value - 3) * 16
         createGame(value)
         updateCanvas()
         scramble(100)
@@ -40,7 +40,7 @@ const init = () => {
 const updateCanvas = () => {
     scale = window.devicePixelRatio
     w = game[0].length * tileSize
-    h =  game.length * tileSize
+    h = game.length * tileSize
     canvas.width = w * scale
     canvas.height = h * scale
     canvas.style.width = `${w}px`
@@ -57,23 +57,25 @@ const updateCanvas = () => {
 //this function recreates a new game
 const createGame = num => {
     game = Array(num).fill().map(_ => Array(num).fill(0))
-    for(let i = 0; i < num; i++){
-        for(let j = 0; j < num; j++){
-            game[i][j] = (i * num + j + 1) % (num*num)
+    for (let i = 0; i < num; i++) {
+        for (let j = 0; j < num; j++) {
+            game[i][j] = (i * num + j + 1) % (num * num)
         }
     }
 }
 
-const getPos = e => {return {x: Math.floor(e.offsetX / tileSize), y: Math.floor(e.offsetY / tileSize)}} //gets the existing position of the tiles following a move
+const getPos = e => {
+        return { x: Math.floor(e.offsetX / tileSize), y: Math.floor(e.offsetY / tileSize) }
+    } //gets the existing position of the tiles following a move
 
 //draw the tiles on the screen
 const draw = () => {
-    c.clearRect(0,0,w,h)
+    c.clearRect(0, 0, w, h)
     c.strokeStyle = "black"
-    for(let i = 0; i < game.length; i++){
-        for(let j = 0; j < game[0].length; j++){
+    for (let i = 0; i < game.length; i++) {
+        for (let j = 0; j < game[0].length; j++) {
             const piece = game[i][j]
-            if(!piece)
+            if (!piece)
                 continue
             const x = j * tileSize
             const y = i * tileSize
@@ -81,37 +83,46 @@ const draw = () => {
             c.fillRect(x, y, tileSize, tileSize)
             c.strokeRect(x, y, tileSize, tileSize)
             c.fillStyle = "black"
-            c.fillText(piece, x+tileSize/2, y+tileSize/2)
+            c.fillText(piece, x + tileSize / 2, y + tileSize / 2)
         }
     }
 }
 
 //Looks for the empty position on the canvas
 const findEmptyPos = () => {
-    for(let i = 0; i < game.length; i++){
-        for(let j = 0; j < game[0].length; j++){
-            if(!game[i][j]){
-                return {x: j, y: i}
+    for (let i = 0; i < game.length; i++) {
+        for (let j = 0; j < game[0].length; j++) {
+            if (!game[i][j]) {
+                return { x: j, y: i }
             }
         }
     }
 }
 
-const checkInvalid = (x, y, i, j) => 
-//
-//
-//Please update this function - insert code here to check if a move is invalid
-//
-//
+var first = 0;
+const checkInvalid = (x, y, i, j) => {
+    //
+    //
+    //Please update this function - insert code here to check if a move is invalid
+
+    var calcX = (x + j);
+    var calcY = (y + i);
+
+    if (calcX >= 0 && calcX < game.length && calcY >= 0 && calcY < game.length) {
+        document.getElementById("test1").innerHTML = "in";
+        return false;
+    } else
+        return (true);
+}
 
 const getNeighbour = pos => { //recalculates the new numbers that will be adjacent in a new game 
     let n = []
-    for(let i = -1; i < 2; i++){
-        for(let j = -1; j < 2; j++){
-            if(checkInvalid(pos.x, pos.y, i, j))
+    for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+            if (checkInvalid(pos.x, pos.y, i, j))
                 continue
-            if(game[pos.y+i][pos.x+j])
-                n.push({x: pos.x+j, y: pos.y+i})
+            if (game[pos.y + i][pos.x + j])
+                n.push({ x: pos.x + j, y: pos.y + i })
         }
     }
     return n
@@ -119,43 +130,49 @@ const getNeighbour = pos => { //recalculates the new numbers that will be adjace
 
 const scramble = (num = 1) => { //scrambles the numbers to start a new game
     moves = 0
-    for(let i = 0; i < num; i++){
+    for (let i = 0; i < num; i++) {
         const emptyPos = findEmptyPos()
         const n = getNeighbour(emptyPos)
         const move = n[Math.floor(Math.random() * n.length)]
         tradePos(move, emptyPos)
     }
     draw()
-    if(!checkGameWin()){
+    if (!checkGameWin()) {
         status.innerText = ''
     }
 }
 
-const lookEmptyPos = pos => {   
-    for(let i = -1; i < 2; i++){
-        for(let j = -1; j < 2; j++){
-            if(checkInvalid(pos.x, pos.y, i, j))
+const lookEmptyPos = pos => {
+    for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+            if (checkInvalid(pos.x, pos.y, i, j))
                 continue
-            if(!game[pos.y+i][pos.x+j])
-                return {x: pos.x+j, y: pos.y+i}
+            if (!game[pos.y + i][pos.x + j])
+                return { x: pos.x + j, y: pos.y + i }
         }
     }
     return null
 }
 
-const tradePos = (pos, newPos) => {  //handles the trading of tiles in a move
-    if(!newPos) 
+const tradePos = (pos, newPos) => { //handles the trading of tiles in a move
+    if (!newPos)
         return
     game[newPos.y][newPos.x] = game[pos.y][pos.x]
     game[pos.y][pos.x] = 0
 }
 
 const checkGameWin = () => {
- //
- //
- //Please update this function - insert code here to check if a game is won at the end of a move
- //
- //
+    //
+    // Please update this function - insert code here to check if a game is won at the end of a move
+    var len = game.length - 1;
+    var min = [0][0]
+    for (var i = 0; i < len; i++) {
+        for (var j = 0; j < len; j++) {
+            if (game[i][j] < min)
+                return false;
+        }
+    }
+    return true;
 }
 
 const move = e => { //handles the movement of an actual tile.
@@ -166,5 +183,4 @@ const move = e => { //handles the movement of an actual tile.
     draw()
     moves += 1
 }
-
 init()
