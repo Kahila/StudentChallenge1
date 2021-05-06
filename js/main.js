@@ -109,7 +109,6 @@ const checkInvalid = (x, y, i, j) => {
     var calcY = (y + i);
 
     if (calcX >= 0 && calcX < game.length && calcY >= 0 && calcY < game.length) {
-        document.getElementById("test1").innerHTML = "in";
         return false;
     } else
         return (true);
@@ -166,9 +165,10 @@ const checkGameWin = () => {
     // Please update this function - insert code here to check if a game is won at the end of a move
     var len = game.length - 1;
     var min = [0][0]
+        // var ret = true;
     for (var i = 0; i < len; i++) {
         for (var j = 0; j < len; j++) {
-            if (game[i][j] < min)
+            if (min < game[i][j] && game[i][j] != 0)
                 return false;
         }
     }
